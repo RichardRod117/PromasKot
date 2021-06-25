@@ -1,0 +1,177 @@
+CREATE SCHEMA PETSDB;
+USE petsdb;
+CREATE TABLE IF NOT EXISTS producto( #auto increment 
+producto_id INT NOT NULL AUTO_INCREMENT,
+nom_producto varchar(45),
+precio_producto INT (5),
+marca_producto VARCHAR(20),
+existencia_producto INT(5),
+fechaprov_producto DATE,
+estatus_producto VARCHAR(9),
+des_producto VARCHAR(45),
+PRIMARY KEY (producto_id)
+)ENGINE = INNODB;
+INSERT INTO producto VALUES (1,'UpiiLota','100','Upiicsa','10','2021-01-01','Activo','Pelota');
+
+CREATE TABLE IF NOT EXISTS promocion(
+promocion_id INT(5) NOT NULL AUTO_INCREMENT,
+nom_promocion VARCHAR(25),
+porcentaje_promocion INT(3),
+des_promocion VARCHAR(45),
+fecha_promocion DATE,
+estatus_promocion VARCHAR(9),
+fin_promocion DATE,
+PRIMARY KEY (promocion_id)
+)ENGINE = INNODB;
+
+-- TABLA DE PROMOCIONES POR PRODUCTO
+CREATE TABLE PROMSPRODS(
+producto_id INT NOT NULL,
+promocion_id INT(5),
+fecha_registro date,
+estatus VARCHAR(9),
+PRIMARY KEY (producto_id,promocion_id,fecha_registro)
+)ENGINE = INNODB;
+
+ALTER TABLE PROMSPRODS ADD CONSTRAINT FK_PPPRDS
+FOREIGN KEY(producto_id)
+REFERENCES PRODUCTO(producto_id);
+
+ALTER TABLE PROMSPRODS ADD CONSTRAINT FK_PPPRMS
+FOREIGN KEY(promocion_id)
+REFERENCES PROMOCION(promocion_id);
+
+CREATE TABLE IF NOT EXISTS membresia(#auto 
+membresia_id INT NOT NULL AUTO_INCREMENT, #se agrego el auto increment, se modifico el nombre
+nom_miembro VARCHAR(35),
+ape_paterno VARCHAR(45), 
+ape_materno VARCHAR(45),#se modifico los apellidos
+fechanac_miembro DATE, 
+telefono_miembro INT(10),
+email_miembro VARCHAR(35),
+estatus_miembro VARCHAR(9),
+PRIMARY KEY (membresia_id)
+)ENGINE = INNODB;
+INSERT INTO membresia(nom_miembro, estatus_miembro) VALUES("SIN MEMBRESIA","Activo");
+
+
+CREATE TABLE IF NOT EXISTS venta(
+venta_id INT(5),
+carrito_id INT,
+membresia_id INT,
+fecha_venta DATE,
+total_venta DOUBLE(6,1),
+metodo_pago varchar(20),
+fechater_garantia DATE
+#PRIMARY KEY (venta_id,membresia_id)
+#PRIMARY KEY (venta_id)
+)ENGINE = INNODB;
+
+
+
+INSERT INTO venta(venta_id, fecha_venta)VALUES(2,'2021-01-01');
+#agregar primero el id venta, membresia_id(crear un usuario 'sin membresia') y fecha de venta
+#ya despues modificar y agregar total de venta
+
+#ALTER TABLE VENTA ADD CONSTRAINT FK_VTAMMBR
+#FOREIGN KEY(membresia_id)
+#REFERENCES MEMBRESIA(membresia_id);
+
+CREATE TABLE IF NOT EXISTS carrito(
+id INT NOT NULL AUTO_INCREMENT,
+carrito_id INT(5),
+venta_id INT(5),
+#membresia_id INT,#-------
+producto_id INT,
+cantidad_producto INT(2),
+total_carrito INt(5),
+estatus_carrito VARCHAR(9),
+PRIMARY KEY (id)
+)ENGINE = INNODB;
+
+INSERT INTO carrito VALUES(2,2,2,2,300,"ACTIVO");
+carrito_id,venta_id,producto_id,cantidad_producto,total_carrito,estatus_carrito
+
+UPDATE VENTA
+  SET total_venta='232', membresia_id=1
+ WHERE venta_id=2;
+  
+
+
+
+ALTER TABLE CARRITO ADD CONSTRAINT FK_CARRVTA
+FOREIGN KEY(venta_id)
+REFERENCES VENTA(venta_id);
+
+ALTER TABLE CARRITO ADD CONSTRAINT FK_CARMEM
+FOREIGN KEY(membresia_id)
+REFERENCES 	MEMBRESIA(membresia_id);
+
+ALTER TABLE CARRITO ADD CONSTRAINT FK_CARRPROD
+FOREIGN KEY(producto_id)
+REFERENCES PRODUCTO(producto_id);
+  
+
+CREATE TABLE IF NOT EXISTS mpago(
+mpago_id INT(5),
+tipo_pago VARCHAR(10), #TIPO DE PAGO "CON TARJETA O CON EFECTIVO"
+des_pago VARCHAR(32),
+estatus_mpago VARCHAR(9),
+PRIMARY KEY (mpago_id)
+)ENGINE = INNODB;
+
+INSERT INTO mpago(mpago_id,tipo_pago,des_pago,estatus_mpago) VALUES(1,"Tarjeta","Pago electronico", "Activo");
+INSERT INTO mpago(mpago_id,tipo_pago,des_pago,estatus_mpago) VALUES(2,"EFECTIVO","Billetes o monedas", "Activo");
+
+CREATE TABLE IF NOT EXISTS garantia(
+garantia_id INT(5),
+fecha_garantia DATE,
+fechater_garantia DATE,
+venta_id INT(5),
+estatus_garantia VARCHAR(9),
+PRIMARY KEY (garantia_id)
+)ENGINE = INNODB;
+
+CREATE TABLE IF NOT EXISTS tipoempleado(
+tipoempleado_id INT(5),
+nom_tipoempleado VARCHAR(25),
+des_tipoempleado VARCHAR(45),
+PRIMARY KEY (tipoempleado_id)
+)ENGINE = INNODB;
+INSERT INTO tipoempleado VALUES(0,"ADMINISTRADOR", "ACCESO A TODO");
+INSERT INTO tipoempleado VALUES(1,"USUARIO", "SIN ACCESO A LOS TOTALES Y AL LOGGIN");
+
+CREATE TABLE IF NOT EXISTS empleado( #auto
+empleado_id int(6) NOT NULL AUTO_INCREMENT,# id a 6 enteros   //SE MODIFICO EMPLEADO ID
+nom_empleado VARCHAR(25),
+ape_empleado VARCHAR(45),
+Fechanac_empleado DATE, 
+email_empleado VARCHAR(35),
+telefono_empleado VARCHAR(10),
+tipoempleado_id int(6), #SE AGREGO COLUMNA
+fechaing_empleado DATE,
+fechamod_empleado DATE,
+estatus_empleado VARCHAR(9),
+contra_empleado VARCHAR(40), #SE CAMBIÓ EL VALOR DE CHAR
+PRIMARY KEY (empleado_id)
+)ENGINE = INNODB;
+
+
+ALTER TABLE EMPLEADO ADD CONSTRAINT FK_EMPSTIPEMP
+FOREIGN KEY(tipoempleado_id)
+REFERENCES tipoempleado(tipoempleado_id);
+
+CREATE TABLE IF NOT EXISTS gastos(
+id_gasto INT(5) NOT NULL AUTO_INCREMENT,
+tipo_gasto VARCHAR(20),
+fecha_gasto DATE, 
+total_gasto INT(5),
+descripcion_gasto VARCHAR(45),
+PRIMARY KEY (id_gasto)
+)ENGINE = INNODB;
+
+CREATE TABLE IF NOT EXISTS total(
+ ingresos INT(5),
+ egresos INT(5),
+ total_total INT(10)
+)ENGINE = INNODB;
